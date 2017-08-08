@@ -1,0 +1,108 @@
+1 将数据库TEST完全导出,用户名system 密码manager 导出到D:\daochu.dmp中
+   exp system/manager@TEST file=d:\daochu.dmp full=y
+ 2 将数据库中system用户与sys用户的表导出
+   exp system/manager@TEST file=d:\daochu.dmp owner=(system,sys)
+ 3 将数据库中的表table1 、table2导出
+   exp system/manager@TEST file=d:\daochu.dmp tables=(table1,table2) 
+ 4 将数据库中的表table1中的字段filed1以"00"打头的数据导出
+   exp system/manager@TEST file=d:\daochu.dmp tables=(table1) query=\" where filed1 like  '00%'\"
+  
+     上面是常用的导出，对于压缩我不太在意，用winzip把dmp文件可以很好的压缩。
+                     不过在上面命令后面 加上 compress=y  就可以了
+
+数据的导入
+ 1 将D:\daochu.dmp 中的数据导入 TEST数据库中。
+   imp system/manager@TEST  file=d:\daochu.dmp
+   上面可能有点问题，因为有的表已经存在，然后它就报错，对该表就不进行导入。
+   在后面加上 ignore=y 就可以了。
+
+ 2 将d:\daochu.dmp中的表table1 导入
+ imp system/manager@TEST  file=d:\daochu.dmp  tables=(table1) 
+
+
+
+
+案例：
+
+exp XYFXGLUSERDEV/gbicc@ORCL file=d:\daochu.dmp owner=XYFXGLUSERDEV
+
+
+imp userid=XYFXGLUSERDEV/XYFXGLUSERDEV full=y file=d:\daochu.dmp
+
+查询所有的表
+
+select count（*） from user_tables
+
+
+
+有空表需要导出：
+
+Oracle 11g中有个新特性：新增了一个参数“deferred_segment_creation”含义是段延迟创建，默认是true。
+
+具体是什么意思呢？
+如果这个参数设置为true，你新建了一个表Table1，并且没有向其中插入数据，那么这个表不会立即分配extent，也就是不占数据空间，即表也不分配 segment 以节省空间，所以这些表也没能导出来。在系统表user_tables中也可以看到segment_treated的字段里是“NO”或者“YES”说明了某张表是否分配了segment。说白了是为了可以节省少量的空间。
+
+
+解决方法：
+1、最原始最笨的办法(不推荐):insert一行，再rollback或者删除就产生segment了。
+该方法是在在空表中插入数据，再删除，则产生segment。导出时则可导出空表。
+ 
+2、设置deferred_segment_creation 参数：
+   设置deferred_segment_creation 参数为FALSE来禁用"段推迟创建"(也就是直接创建segment)，无论是空表还是非空表，都分配segment。
+   在sqlplus中，执行如下命令：
+   SQL>alter system set deferred_segment_creation=false;
+   查看：
+   SQL>show parameter deferred_segment_creation;
+   注意：该值设置后只对后面新增的表产生作用，对之前建立的空表(已经存在的)不起作用，仍不能导出。
+   并且要重新启动数据库，让参数生效。
+
+
+构建对空表分配空间的SQL命令。
+   查询当前用户下的所有空表（一个用户最好对应一个默认表空间）。命令如下：
+   SQL>select table_name from user_tables where NUM_ROWS=0; 
+   根据上述查询，可以构建针对空表分配空间的命令语句，如下：
+   SQL>Select 'alter table '||table_name||' allocate extent;' from user_tables where num_rows=0 or num_rows is null（注意：很多教程没有这里，这里是有可能位空的）
+   上述代码可产生批量的修改表extent的SQL语句(有多少张空表就产生多少条)，我们只需要将其生成的所有sql代码全部执行，就可以给每一张已经存在的表来分配segment，就OK了。
+
+
+
+最后：这时再用exp导出就没有问题了。但是：数据库本身的deferred_segment_creation属性还是TRUE,也是就是说如果再创建新表的话，默认还是不分配segment的。所以还是需要更改deferred_segment_creation的参数，以便以后创建的新表自动分配segment。
+总结：
+    如果你的数据库还没有创建任何数据表，那么直接修改deferred_segment_creation属性，以后创建的表无论是不是为空都会自动分配segment，就不会出现导不出空表的情况。然而如果你的数据库中已经有很多空表，并且需要导出来，那么光修改deferred_segment_creation属性则没有用的，因为它只对之后创建的表有作用。你需要给已存在的空表分配segment以便可以导出存在的空表，就用到上面讲的allocate extent方法，但此方法只针对已经存在的表的segment属性，所以最好就是：先给已存在的空表分配segment，方便其可以直接导出，然后设定deferred_segment_creation参数以便以后每张表无论是否为空都自动分配segment。
+
+
+
+-----------------------------------------------------导出程数据库数据-----------------------------------------------------------
+
+
+在oracle客户端，打开net manager。
+创建一个服务命名TEST_ORCL，主机IP为：192.168.1.110，服务名orcl，端口1521
+
+二、测试远程服务器是否畅通
+
+进入到cmd后，执行命令:tnsping TEST_ORCL。    例如：tnsping dcsh
+
+
+三、远程操作数据库
+
+
+导出：
+Sql代码 
+1：exp username/password@TEST_ORCL file=bak_filepath 
+2：exp username/password@TEST_ORCL full=y file=bak_filepath
+username 用户名，password 密码，TEST_ORCL 客服端服务名，bak_filepath 备份文件存放的路径
+
+例如：  exp dev/dev@dcsh file=d:\ANBFX\dev.dmp owner=dev
+
+导入：
+Sql代码 
+1：imp username/password@TEST_ORCL file=bak_filepath full=y 
+2：imp username/password@TEST_ORCL/database_name file=bak_filepath full=y 
+3：imp username/password@TEST_ORCL file=bak_filepath fromuser=fromadmin touser=toadmin
+username 用户名，password 密码，TEST_ORCL 客服端服务名，bak_filepath 备份文件存放的路径
+fromadmin 备份数据的用户名，toadmin 还原数据库的用户名。database_name 还原到那个数据库上
+full=y 将数据库整体导出，包括表结构等。
+
+
+
+

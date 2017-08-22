@@ -1,0 +1,16 @@
+create tablespace userss
+datafile 'anbfx.DBF'
+size 100M autoextend on;
+
+create tablespace HZBOR
+datafile 'anbfx.DBF'
+size 100M autoextend on;
+
+
+
+create user dev identified by dev
+default tablespace userss
+temporary tablespace temp;
+
+
+grant connect,resource,dba to dev;

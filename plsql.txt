@@ -1,0 +1,1079 @@
+--plsql编程
+
+--plsql 语法
+
+declare
+        --声明部分 例如：定义变量 常量 游标
+begin
+        --程序编写 sql 语句
+exception
+        --异常处理
+end;
+
+
+--最简单
+begin
+  dbms_output.put_line('你好');
+end;
+
+
+--定义简单变量
+declare
+  v_num  number;
+begin
+  v_num:=30;
+  dbms_output.put_line('v_num的值为：'||v_num);
+end;
+
+
+--输入一个雇员编号，得到指定的雇员姓名  （输入不存在的编号会报错，需要异常处理）
+
+declare
+      v_eno number;                                         --与数据库类型一致
+      v_ename varchar2(20);                                 --与数据库类型一致
+begin
+      v_eno:=&empno;                                        -- &empno 获得键盘输入
+      select ename into v_ename from emp where empno=v_eno;
+      dbms_output.put_line('v_eanme的值为：'||v_ename);
+end;
+
+
+--变量的声明与使用 %type 与 %rowtype  强类型语言   变量先声明在使用   由 _ $  #  组成
+
+declare
+           v_result  varchar2(20) :='结果集';   --声明变量
+           v_resulta  constant number not null :=100;  --声明常量
+begin
+            -- v_resulta:=20 不能执行  声明常量不能被改变        
+           dbms_output.put_line(v_result);
+end;
+
+
+
+--使用 %type 声明变量 跟数据库字段长度类型进行自动映射
+ 
+declare
+      v_eno emp.empno%type;                                 
+      v_ename emp.ename%type; 
+begin
+      v_eno:=&empno;                                        -- &empno 获得键盘输入
+      select ename into v_ename from emp where empno=v_eno;
+      dbms_output.put_line('v_eanme的值为：'||v_ename);
+end;
+
+
+--使用%rowtype  声明变量
+
+--select * from dept
+
+declare
+      v_deptrow   dept%rowtype;          --可以装下dept一行所有列的内容
+begin
+      select * into v_deptrow from dept where deptno=10;
+      dbms_output.put_line(v_deptrow.deptno||v_deptrow.dname||v_deptrow.loc);   --v_deptrow.数据库字段 取出一行各列的数据
+end;
+
+
+--程序控制  顺序结构  分支结构  循环结构
+
+--if语句  if   if ... else   if ... elsif ... else
+
+declare
+        v_count  number;
+begin
+        select count(empno) into v_count from emp;
+        if v_count > 10 then
+          dbms_output.put_line('emp表记录大于10条');
+        end if;
+end;
+
+--if  else 语句
+declare
+        v_count  number;
+begin
+        select count(deptno) into v_count from dept;
+        
+        if v_count > 10 then
+          
+                  dbms_output.put_line('dept表记录大于10条');                 
+        else
+                  dbms_output.put_line('dept表记录小于10条');              
+        end if;
+end;
+
+
+--if ... elsif ... else  语句
+declare
+        v_count  number;
+begin
+        select count(deptno) into v_count from dept;
+        
+        if v_count > 10 then
+          
+                  dbms_output.put_line('dept表记录大于10条');                 
+        elsif v_count < 10 then
+        
+                  dbms_output.put_line('dept表记录小于10条'); 
+                  
+        else
+                  dbms_output.put_line('dept表记录等于10条'); 
+        end if;
+end;
+
+
+--用户输入一个雇员编号，根据所在部门上涨工资，规则：10部门上涨10%  20部门 上涨 %20  30部门上涨 30%   最高不能超过5000
+
+select * from emp
+
+declare
+           v_eno      emp.empno%type;
+           v_sal      emp.sal%type;
+           v_deptno   emp.deptno%type;
+
+begin
+           v_eno:=&empno;
+           
+           select deptno,sal  into v_deptno,v_sal from emp where empno=v_eno;
+           
+           if v_deptno=10 then
+             
+              if v_sal*1.1> 5000 then
+                update emp set sal=5000 where empno=v_eno;
+              else
+                update emp set sal=v_sal*1.1 where empno=v_eno; 
+              end if;
+             
+           elsif v_deptno=20 then
+                 if v_sal*1.2> 5000 then
+                    update emp set sal=5000 where empno=v_eno;
+                  else
+                    update emp set sal=v_sal*1.2 where empno=v_eno; 
+                  end if;
+           else
+             if v_sal*1.3> 5000 then
+                    update emp set sal=5000 where empno=v_eno;
+                  else
+                    update emp set sal=v_sal*1.3 where empno=v_eno; 
+                  end if;
+           end if;
+
+end;
+
+--判断符
+declare
+         --v_temp varchar2(10):='nimeide';
+begin
+           --if 'mldn'='mldn' and 100=100 then
+           --   dbms_output.put_line('结果为true');
+           --end if;
+           
+         --  if to_date('1983-01-01','yyyy-mm-dd') between to_date('1980-01-01','yyyy-mm-dd') and to_date('1989-12-31','yyyy-mm-dd') then
+           --   dbms_output.put_line('80后');
+          -- end if;
+           
+           --if 10 in(10,20,30) then
+             --dbms_output.put_line('数据成功查找到');
+          -- end if;
+           
+           --if v_temp is  null then               --is not null 也可以
+            -- dbms_output.put_line('v_temp是空');
+             
+            -- else
+             --  dbms_output.put_line('v_temp不是空');
+           --end if;
+           
+           
+           --if 'www.baidu.com' like '%www%' then              
+            -- dbms_output.put_line('可以查找到www');
+           --end if;
+           
+           --if not false then              
+             --dbms_output.put_line('取反');
+          -- end if;
+           
+           if 'mldn' = 'lhb' or 10=10 then              
+             dbms_output.put_line('or有一个结果为true则结果为true');
+           end if;
+end;
+
+--case 语句
+
+declare
+          v_week number;
+begin
+  
+          v_week:=to_number(to_char(sysdate,'D'));
+          
+          case v_week
+            
+            when 1 then
+                             dbms_output.put_line('周日');
+            when 2 then
+                             dbms_output.put_line('周一');
+            when 3 then
+                             dbms_output.put_line('周二');
+            when 4 then
+                             dbms_output.put_line('周三');
+            when 5 then
+                             dbms_output.put_line('周四');
+            when 6 then
+                             dbms_output.put_line('周五');
+            else
+                             dbms_output.put_line('周六');
+            end case;
+end;
+
+
+--循环控制语句
+
+--loop 循环  至少执行一次 (知道循环结束条件用loop)
+
+declare
+       v_i number:=1;
+
+begin
+       loop
+                             dbms_output.put_line(v_i);      -- 输出1，2，3，4
+           exit when v_i>3;                                  --结束条件
+                             dbms_output.put_line(v_i);      --输出1，2，3
+           v_i:=v_i+1;
+                             dbms_output.put_line(v_i);      --输出2，3，4
+       end loop;
+end;
+
+
+--while loop 
+declare
+       v_i number:=1;
+
+begin
+       while (v_i<=3) loop
+                                   
+           dbms_output.put_line(v_i);                           
+                            
+           v_i:=v_i+1;
+                           
+       end loop;
+end;
+
+
+--for in 循环  明确知道循环条件用for
+declare
+       v_i number:=1;
+
+begin
+      for v_i in 1 .. 3 loop
+                                   
+           dbms_output.put_line(v_i);                           
+                       
+       end loop;
+end;
+
+--for in 循环反转 reverse
+declare
+       v_i number:=1;
+
+begin
+      for v_i in reverse 1 .. 3 loop
+                                   
+           dbms_output.put_line(v_i);                           
+                       
+       end loop;
+end;
+
+--循环控制 exit
+declare
+       v_i number:=1;
+
+begin
+      for v_i in 1 .. 10 loop
+           if v_i=3 then
+             exit;              --直接跳出循环
+           end if;                        
+           dbms_output.put_line(v_i);                           
+                       
+       end loop;
+end;
+
+--循环控制 continue 
+declare
+    --   v_i number:=1;
+
+begin
+      for v_i in 1 .. 10 loop
+           if not mod(v_i,2)=0 then    --mod(v_i,2)  类似于 java 中的 v_i%2=0
+             continue;              
+           end if;                        
+           dbms_output.put_line(v_i);                           
+                       
+       end loop;
+end;
+
+
+--goto语句
+declare
+
+begin
+      for v_i in 1 .. 10 loop
+           if v_i=3 then  
+             goto   endpoint;          
+           end if;                        
+           dbms_output.put_line(v_i);                           
+                       
+       end loop;
+       <<endpoint>>
+       dbms_output.put_line('for循环结束');
+end;
+
+
+
+--异常处理
+
+declare 
+       v_result number;
+begin
+       v_result:=10/0;
+                dbms_output.put_line('异常之后的代码将不会被执行');
+       exception
+                when zero_divide then
+                dbms_output.put_line('被除数不能为零');
+end;
+
+--异常处理 others 
+declare 
+       v_result number;
+begin
+       v_result:=10/0;
+                dbms_output.put_line('异常之后的代码将不会被执行');
+       exception
+                when others then
+                dbms_output.put_line('被除数不能为零');
+end;
+
+
+--自定义异常
+declare 
+           v_date number;
+           v_myexp  exception;
+begin
+           v_date :=&inputdate;
+           
+           if v_date>10 and v_date<100 then
+             raise v_myexp; 
+           end if;
+           
+exception
+  
+          -- when v_myexp then
+            -- dbms_output.put_line('输入数字有误');
+           
+            when others then
+             dbms_output.put_line('输入数字有误');
+end;
+
+--抛出自定义异常编号
+declare 
+           v_date number;
+           v_myexp  exception;                     --提示用户自定义异常未得到处理                    
+           pragma exception_init(v_myexp,-20789);--数字范围在 20000 - 20999   会返回这个编号
+begin
+           v_date :=&inputdate;
+           
+           if v_date>10 and v_date<100 then
+             raise v_myexp;                         --抛出异常
+           end if;
+           
+exception
+          -- when v_myexp then
+            -- dbms_output.put_line('输入数字有误');
+           
+            when others then
+             dbms_output.put_line('输入数字有误');
+end;
+
+
+--抛出自定义异常信息
+declare 
+           v_date number;
+           v_myexp  exception;                                   
+           pragma exception_init(v_myexp,-20789);
+begin
+           v_date :=&inputdate;
+           
+           if v_date>10 and v_date<100 then
+             raise_application_error(-20789,'输入的数字不在10-100之间');                         --抛出自定义异常信息
+           end if;
+           
+exception
+          -- when v_myexp then
+            -- dbms_output.put_line('输入数字有误');
+           
+            when others then
+             dbms_output.put_line('输入数字有误');
+end;
+
+
+--oracle 数据库游标
+--隐式游标 crdu 都存在在隐式游标 
+
+declare
+         v_count  number;
+begin
+         select count(*) into v_count from dept;
+         dbms_output.put_line(v_count);
+end;
+
+
+--显示游标 取出游标中的一行数据
+declare
+         cursor cur_emp is select * from emp;--定义游标
+         v_emprow   emp%rowtype;
+begin
+         if cur_emp%isopen then    --判断游标是否打开
+            null;
+         else
+            open cur_emp;
+         end if;
+         
+         fetch cur_emp into v_emprow;  --默认取出游标中的第一行数据
+         
+         dbms_output.put_line('雇员姓名：'||v_emprow.ename||'雇员工资'||v_emprow.sal);
+         
+         close cur_emp;
+         
+end;
+
+
+--while loop 循环游标
+declare
+         cursor cur_emp is select * from emp;--定义游标
+         --cursor cur_emp return emp%rowtype is select * from emp;
+         v_emprow   emp%rowtype;
+begin
+         if cur_emp%isopen then    --判断游标是否打开
+            null;
+         else
+            open cur_emp;
+         end if;
+         
+         fetch cur_emp into v_emprow;  --取得游标的第一行
+         
+         while cur_emp%found loop
+           
+           fetch cur_emp into v_emprow;--指向游标的下一行
+           
+           dbms_output.put_line('雇员姓名：'||v_emprow.ename||'雇员工资'||v_emprow.sal);
+           
+         end loop;
+         
+         close cur_emp;
+end;
+
+
+--loop 循环游标 游标指针自动下移
+declare
+         cursor cur_emp is select * from emp;--定义游标
+         v_emprow   emp%rowtype;
+begin
+         if cur_emp%isopen then    --判断游标是否打开
+            null;
+         else
+            open cur_emp;
+         end if;
+         
+          loop
+           
+           fetch cur_emp into v_emprow;--指向游标的下一行
+           exit when cur_emp%notfound;
+           
+           dbms_output.put_line('雇员姓名：'||v_emprow.ename||'雇员工资'||v_emprow.sal);
+           
+         end loop;         
+         close cur_emp;
+end;
+
+--for 循环游标 for in 循环自动打开游标，自动关闭游标，并且游标指针自动下移，不需要fetch
+declare
+         cursor cur_emp is select * from emp;--定义游标
+         v_emprow   emp%rowtype;
+begin
+      for v_emprow in cur_emp loop
+        dbms_output.put_line('雇员姓名：'||v_emprow.ename||'雇员工资'||v_emprow.sal);
+      end loop;              
+end;
+
+--更懒的一种使用游标并循环有标的方式
+declare
+
+begin
+      for v_emprow in (select * from emp) loop
+        dbms_output.put_line('雇员姓名：'||v_emprow.ename||'雇员工资'||v_emprow.sal);
+      end loop; 
+end;
+
+
+--参数游标
+
+declare
+      cursor cur_emp(p_dno emp.deptno%type) is select * from emp where deptno=p_dno;
+begin
+      for emp_row in cur_emp(&inputdeptno) loop
+         dbms_output.put_line('雇员姓名：'||emp_row.ename||'雇员工资'||emp_row.sal);
+      end loop;
+end;
+
+--上涨所有人的工资 上涨规则：10部门 15% 20 22%  30 39 %
+select * from emp 
+declare
+           cursor v_emp is select * from emp;--此方式声明游标变量称为静态游标
+           v_emprow  emp%rowtype;
+begin
+           for v_emprow in v_emp loop
+             if v_emprow.deptno=10 then
+               update emp set sal=sal*1.15 where empno= v_emprow.empno;
+             elsif v_emprow.deptno=20 then
+                   update emp set sal=sal*1.1 where empno= v_emprow.empno;
+             else
+                update emp set sal=sal*1.39 where empno= v_emprow.empno;
+               
+             end if;
+           end loop;
+end;
+
+--游标变量 (不能使用for循环)
+declare
+           type dept_ref  is ref cursor return dept%rowtype;--又return属于强类型定义
+           
+           cur_dept  dept_ref;     --定义游标变量
+           
+           v_deptrow dept%rowtype;
+begin
+           open cur_dept for select * from dept;
+           loop
+             fetch cur_dept into v_deptrow;
+             exit when cur_dept%notfound;
+             dbms_output.put_line(v_deptrow.deptno);
+           end loop;
+end;
+
+
+--游标类型变量  弱类型 
+declare
+           type dept_ref  is ref cursor;--弱类型定义
+           
+           cur_dept  dept_ref;     --定义游标变量
+           
+            --cur_dept sys_refcursor;   oracle 9i 之后使用此种方式声明游标变量  cur_dept sys_refcursor  等同于 type dept_ref  is ref cursor；cur_dept  dept_ref; 两行
+            
+           v_deptrow dept%rowtype;
+begin
+           open cur_dept for select * from dept;
+           loop
+             fetch cur_dept into v_deptrow;
+             exit when cur_dept%notfound;
+             dbms_output.put_line(v_deptrow.deptno);
+           end loop;
+end;
+
+
+
+--子程序  函数  和  存储过程
+
+
+create or replace  procedure my_proc  is
+       --定义变量
+begin
+       dbms_output.put_line('定义存储过程');
+end;
+--调用过程
+call my_proc();
+
+create or replace procedure my_proc(p_eno in emp.empno%type) is  -- 不写in  默认就是in 默认是输入参数
+       v_ename emp.ename%type;
+       v_sal   emp.sal%type;
+       v_count  number;
+begin
+       select count(*) into v_count from emp where empno=p_eno;
+       if  v_count =0 then
+         return;       
+         end if;
+         select ename,sal into v_ename,v_sal from emp where empno=p_eno;
+         
+         dbms_output.put_line(v_ename||v_sal);
+end; 
+
+call my_proc(&eno);
+
+
+create or replace  procedure my_proc(p_dno dept.deptno%type,p_dna dept.dname%type,p_dlc dept.loc%type) is
+       v_deptCount  number;
+begin
+       select count(*) into v_deptCount from dept  where deptno=p_dno;
+       if v_deptCount > 0 then
+             raise_application_error(-20789,'输入的部门编号已经存在'); 
+         else
+           insert into dept (deptno,dname,loc) values(p_dno,p_dna,p_dlc);
+       end if;
+exception
+           when others then
+             dbms_output.put_line(sqlerrm);
+end;
+
+call my_proc(&dnvo,&dn,&dl);
+
+--存储过程参数的输入输出 （in ，out，in out） 三种
+create or replace procedure queryemp(v_empno emp.empno%type,v_ename out emp.ename%type,v_sal out emp.sal%type) is
+
+begin
+       select ename,sal into v_ename,v_sal from emp where empno=v_empno;
+end;
+
+--调用
+declare
+       v1 emp.ename%type;
+       v2 emp.sal%type;
+begin
+       queryemp(7369,v1,v2);
+       dbms_output.put_line('雇员姓名：'||v1);
+       dbms_output.put_line('雇员工资：'||v2);
+end;
+
+--存储过程in out
+create or replace procedure  swap(p1 in out number ,p2 in out number) is
+          v_temp number;
+begin
+       v_temp:=p1;
+       p1:=p2;
+       p2:=v_temp;
+end;
+
+declare
+       num1  number :=100;
+       num2 number :=200;
+begin
+       swap(num1,num2);
+       dbms_output.put_line('调用存储过程之后num1的值：'||num1);
+       dbms_output.put_line('调用存储过程之后num2的值：'||num2);
+end;
+
+
+--函数
+create or replace function get_salary_fun(p_eno emp.empno%type) return number as
+       
+       v_salaery  emp.sal%type;
+begin
+       select sal + nvl(comm,0)  into v_salaery from emp  where empno=p_eno;
+       return v_salaery;
+end;
+--调用函数
+declare
+       v_salaery number;
+begi
+       v_salaery :=get_salary_fun(7369);
+       dbms_output.put_line(v_salaery);
+end;
+--调用函数
+select get_salary_fun(7369) from dual;
+
+create or replace procedure invok_emp is
+          v_salaery number;
+begin
+          v_salaery :=get_salary_fun(7369);
+       dbms_output.put_line(v_salaery);
+end;
+--通过过程调用函数
+call invok_emp();
+
+--查询子程序
+select * from user_procedures  --结果为函数和过程 通过object_type来区分是函数还是过程
+
+select * from  user_objects   --结果为索引  表  函数   过程
+ 
+
+--使用存储过程和函数的的原则： 1.如果需要返回多个参数或者不返回使用存储过程，有一个返回值使用函数 2.存储过程用于执行制定的动作，函数用于计算和返回一个值。
+--3.可以在sql语句内部调用函数用户来完成复杂的计算，但是不能调用存储过程，所以这是函数的特色
+
+
+--子程序权限
+grant execute on 创建过程的用户 to  要调用过程的用户
+
+--动态sql语句  函数 和存储过程中无法编译通过ddl 语句 所以要使用 动态sql语句 execute immediate  grant create any table to scott;
+
+create or replace procedure create_table(ctable varchar2) as
+       v_count  number;
+begin 
+  select count(*) into v_count from user_tables t  where t.TABLE_NAME='EMP1';
+  if v_count = 0 then
+     execute immediate ' create table' ||  ctable || '(id number,
+                                                       name varchar2(10),
+                                                       salary number )';
+       else
+         execute immediate 'insert into emp1 values (100,''jacky'',5600)';
+         commit;
+  end if;
+end;
+SELECT * FROM EMP1
+call create_table(' emp1');
+
+--动态sql创建表 循环插入数据
+--create  or replace procedure  dsql_test is 
+declare
+            v_sql_statement  varchar2(500);
+            v_count   number;
+begin
+            select COUNT(*) INTO v_count from user_tables t where t.TABLE_NAME='MLDN_TAB';
+             if v_count = 0 then
+                v_sql_statement :='create table mldn_tab(
+                                                id  number,
+                                                url varchar2(20)
+                           )';
+                    execute  immediate  v_sql_statement;
+              else
+                      v_sql_statement:='truncate TABLE mldn_tab';
+                      execute  immediate  v_sql_statement;
+             end if;
+             
+             v_sql_statement:='begin 
+                      for x in 1 .. 10 
+                        loop 
+                          insert into mldn_tab values(x,''www.baidu.com''||x);
+                          
+                          end loop; 
+                      
+                     end;';
+             execute  immediate  v_sql_statement;
+end;
+
+call dsql_test();
+
+--设置绑定变量  通过using(ddl语句不适用  ) 进行 赋值
+
+declare
+            v_sql_statement  varchar2(500);
+            v_deptno         dept.deptno%type :=60;
+            v_dname          dept.dname%type:='mldn';
+            v_loc            dept.loc%type:='北京';
+begin
+            v_sql_statement := 'insert into dept values(:dno,:dna,:dl)';
+            
+            execute immediate v_sql_statement using v_deptno,v_dname,v_loc;
+             
+end;
+
+select * from dept
+
+--动态sql 数据集合 更新数据
+declare
+       v_sql_statement  varchar2(500);
+       type deptno_nested is table of  dept.deptno%type not null;  --数据集合 中的 嵌套表
+       type dname_nested  is table of  dept.dname%type not null;   --数据集合 中的 嵌套表
+       
+       v_deptno   deptno_nested :=deptno_nested(10,20,30,40);  --数据集合嵌套表  初始化
+       v_deptename  dname_nested :=dname_nested('财务部','研发部','销售部','操作部');
+begin
+       v_sql_statement :='update dept set dept.dname=:dna where dept.deptno=:dno';
+       for x in 1 .. v_deptno.count 
+         loop
+           execute immediate v_sql_statement using v_deptename(x),v_deptno(x);
+         end loop;
+end;
+
+--动态sql 占位符using（默认是in输入参数） 查询数据
+declare
+        v_sql_statement  varchar2(500);
+        v_empno          emp.empno%type:=7369;
+        v_emprow        emp%rowtype;
+begin
+        v_sql_statement:='select * from emp where empno=:eno';
+        
+        execute immediate v_sql_statement into v_emprow using v_empno;
+        
+        dbms_output.put_line(v_emprow.empno||v_emprow.ename);
+end;
+
+--动态sql returning（默认是out 输出参数） 更新 （获得的是跟新后的数据）
+declare
+        v_sql_statement  varchar2(500);
+        v_empno          emp.empno%type:=7369;
+        v_salary         emp.sal%type;
+        v_job            emp.job%type;
+begin
+        v_sql_statement:='update emp set sal=sal*1.2,job=''开发'' where empno=:eno returning sal,job into :v_salary,:v_job';
+        execute immediate v_sql_statement using v_empno  returning into v_salary,v_job;
+        
+        dbms_output.put_line('调整后的工资：'||v_salary||'新的职位：'||v_job);
+end;
+
+
+--动态sql returning (与return 效果一样)delete 操作 （获得的是删除之前的数据）
+declare 
+        v_sql_statement  varchar2(500);
+        v_empno          emp.empno%type:=7369;
+        v_ename          emp.ename%type;
+        v_sal            emp.sal%type;
+begin
+        v_sql_statement:='delete emp where empno=:eno returning ename,sal into :ena,:sal';
+        execute immediate v_sql_statement using v_empno returning into  v_ename,v_sal;
+        
+        dbms_output.put_line('删除的员工编号：'||v_empno||'删除的雇员姓名：'||v_ename||'删除的员工工资：'||v_sal);
+end;
+
+--动态sql using in out 
+create or replace procedure dept_insert_proc(p_deptno in out dept.deptno%type,p_dname dept.dname%type,p_loc dept.loc%type) is
+
+begin
+       select MAX(deptno) into p_deptno from dept;
+       p_deptno:=p_deptno+1;
+       insert into dept values(p_deptno,p_dname,p_loc); 
+end;
+
+--动态 sql 调用存储过程 
+declare
+       v_sql_statement  varchar2(500);
+       v_deptno         dept.deptno%type;
+       v_dname          dept.dname%type:='教育部';
+       v_loc            dept.loc%type:='北京';
+begin
+       v_sql_statement:='begin dept_insert_proc(:dno,:dna,:dl);
+                         end;';
+       execute immediate v_sql_statement using in out v_deptno,in v_dname,v_loc;
+       
+       dbms_output.put_line('新增部门编号为：'||v_deptno);
+end;
+
+
+--触发器start ################################################################################################################################################################
+
+select * from users
+
+select * from user_tables
+
+create table login_log( loginname varchar2(30), logintime date);
+
+CREATE SEQUENCE loginlog_sequence  --序列名
+INCREMENT BY 1   -- 每次加几个  
+START WITH 1       -- 从1开始计数  
+NOMAXVALUE        -- 不设置最大值  
+NOCYCLE               -- 一直累加，不循环  
+CACHE 10;
+
+
+
+Create or replace trigger biud_user_login
+
+Before insert or update or delete
+
+on users
+
+Begin
+
+  Insert into login_log(id,loginname,logintime)   Values(loginlog_sequence.nextval,user, sysdate);
+
+  End;
+  
+  
+  
+insert into users (id,name) values (68,'lisi')
+
+update  users set name='lisi1' 
+
+delete users
+
+select * from login_log;
+
+
+--为主健生成自增序列号
+CREATE SEQUENCE loginlog_sequence  --序列名
+INCREMENT BY 1   -- 每次加几个  
+START WITH 1       -- 从1开始计数  
+NOMAXVALUE        -- 不设置最大值  
+NOCYCLE               -- 一直累加，不循环  
+CACHE 10;
+
+
+create or replace trigger tri_user_login  --触发器
+
+  before insert on login_log    --before表示在数据库动作之前触发器执行;
+
+  for each row
+
+begin
+
+  select loginlog_sequence.nextval into :new.id from dual;
+
+end;
+
+insert into login_log(loginname,logintime) values(user,sysdate);
+
+
+--创建login_log 表的复本
+create table login_log_co as select * from login_log;
+
+--利用触发器进行表和备份表之间的同步复制。
+
+create or replace trigger user_login_copy
+ after update or insert or delete on login_log     --after：表示在数据库动作之后触发器执行
+ for each row
+begin
+   if inserting then
+     insert into  login_log_co values (:new.id,:new.loginname,:new.logintime);
+   elsif deleting then
+     delete from login_log_co where id=:old.id;
+   else
+     update login_log_co set id=:new.id,loginname=:new.loginname,logintime=:new.logintime where id=:new.id;
+   end if;
+end;
+
+--测试
+insert into login_log(loginname,logintime) values(user,sysdate);
+
+delete  login_log  where id = '13'
+
+update  login_log set loginname = 'zhangsan' where id = '10'
+
+select * from login_log_co
+
+select * from login_log
+
+
+--删除一条记录将记录存储到另一个表中
+create table login_log_save as select * from login_log;
+
+create or replace trigger user_delete_save
+ after delete on login_log    --after：表示在数据库动作之后触发器执行
+ for each row                 --for each row：对表的每一行触发器执行一次。如果没有这一选项，则只对整个表执行一次。
+begin
+     insert into  login_log_save values (:old.id,:old.loginname,:old.logintime); 
+end;
+
+--测试
+delete  login_log  where id = '10'
+
+delete login_log_save
+
+drop  table login_log_save
+
+select * from login_log_save
+
+
+
+--查询当前用户的触发器
+SELECT NAME FROM USER_SOURCE WHERE TYPE='TRIGGER' GROUP BY NAME 
+--禁用触发器
+alter trigger trigger_name disable;
+--激活触发器
+alter trigger USER_LOGIN_CO enable;
+--禁用某个表上的触发器
+alert table login_log diable all triggers;
+
+select 'drop trigger ' || trigger_name || ';'  from user_triggers; 
+
+select 'drop table '||table_name||' cascade constraints;' from user_tables;  
+select 'drop trigger ' || trigger_name || ';'  from user_triggers;  
+select 'drop sequence ' || sequence_name || ';'  from user_sequences; 
+
+
+	drop trigger USER_LOGIN_CO;
+	drop trigger DUPLICATE_LOGIN_COPY;
+	drop trigger DUPLICATE_LOGIN;
+	drop trigger USER_LOGIN_COPY;
+	drop trigger TRI_USER_LOGIN;
+
+
+--
+create or replace trigger auth_secure 
+before insert or update or delete
+on tb_emp
+begin
+  --if user <>'SCOTT' then
+  -- raise_application_error(-20001,'You don''t have access to modify this table.');
+  --end if;
+   
+  IF(to_char(sysdate,'DY')='星期日') THEN
+    RAISE_APPLICATION_ERROR(-20600,'不能在周末修改表tb_emp'); --第一个参数取值范围必须在20000 - 20999 之间
+  END IF;
+END;
+
+select to_char(sysdate,'DY') from dual;
+
+--创建触发器
+CREATE OR REPLACE TRIGGER EMP_INFO
+ AFTER INSERT OR UPDATE OR DELETE ON scott.EMP
+ 
+ 
+DECLARE
+ CURSOR CUR_EMP IS --定义游标
+  SELECT DEPTNO, COUNT(EMPNO) AS TOTAL_EMP, SUM(SAL) AS TOTAL_SAL FROM scott.EMP GROUP BY DEPTNO;
+  
+  
+BEGIN
+ DELETE DEPT_SAL; --触发时首先删除映射表信息
+ FOR V_EMP IN CUR_EMP LOOP
+  --DBMS_OUTPUT.PUT_LINE(v_emp.deptno || v_emp.total_emp || v_emp.total_sal);
+  --插入数据
+  INSERT INTO DEPT_SAL
+  VALUES
+   (V_EMP.DEPTNO, V_EMP.TOTAL_EMP, V_EMP.TOTAL_SAL);
+ END LOOP;
+END;
+
+
+--触发器 end ################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

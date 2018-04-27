@@ -1,0 +1,99 @@
+linux 关机的命令：(关机之前一定要先执行：sync命令)
+
+shoutsown -h now ,halt , poweroff ,init 0
+
+shutdown的几种用法：
+
+shutdown  -h now   立马关机
+shutdown  -h 20:25   系统会在今天的20：25关机
+shutdown  -h +10  10分钟后关机
+shutdown -r now  系统立马重启
+shutdown -r +10  系统将在10分钟之后关机
+reboot  就是重启  等同于shutdown - r  now  init 6
+halt  关闭系统   等同于  shutdown -h now  和 poweroff
+
+
+linux 创建文件夹
+
+touch 创建二进制文件
+
+touch  test.sh    touch  test  cd test无法进入文件
+
+mkdir test   cd  test  进入文件
+mkdir -p test1/test2/test3/test4  创建多级文件
+mkdir -m 711 test2                创建文件并直接给文件授权  7 当前用户（rwx权限） 1组用户和其他用户（x权限） 
+
+vi test.sh  直接进入编辑
+
+vi 进入文件  按i键 启用编辑  输入后按esc键    
+输入：wq 保存文件并退出vi  
+输入：:w  保存文件但是不退出vi
+输入：:w feil 将修改另外保存到file中，不退出vi
+输入：:q 不保存文件，退出vi 
+
+使用chmod 给文件 增加减少权限 
+
+chmod    u（当前用户）		+		r（读4）		被授权的文件
+		 g（组用户）		-		w（写2）
+		 o（其他用户）		=		x（执行1）
+		 a（所有用户）
+		 
+rmdir 删除空目录：（仅能删除空目录）
+
+rmdir test       rmdir -p test/test1/test2/test3  一并删除
+
+rm 可以删除文件和文件夹，但是文件夹不能为空
+
+-d      --directory    删除可能仍有数据的目录 (只限超级用户)
+
+-f      --force          略过不存在的文件，不显示任何信息
+
+-i      --interactive 进行任何删除操作前必须先确认
+
+-r/R --recursive    同时删除该目录下的所有目录层
+
+-v      --verbose     详细显示进行的步骤
+
+          --help            显示此帮助信息并离开
+
+         --version      显示版本信息并离开
+
+要删除第一个字符为‘-’的文件 (例如‘-foo’)，请使用以下其中一种方法：
+rm -- -foo
+
+rm ./-foo
+
+请注意，如果使用 rm 来删除文件，通常仍可以将该文件恢复原状。如果想保证
+该文件的内容无法还原，请考虑使用 shred。
+
+范例：
+
+删除所有rb语言程序档；删除前逐一询问确认 :
+rm -i *.rb
+
+将 Finished 子目录及子目录中所有档案删除 :
+rm -r Finished
+
+将 Finished 子目录及子目录中所有档案删除,并且不用--确认 :
+
+rm -rf Finished
+
+cp 复制文件或目录
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

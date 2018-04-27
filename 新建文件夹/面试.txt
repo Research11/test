@@ -1,0 +1,546 @@
+1.用==比较String：(在String里==比较的是地址)（==既可以比较值也可以比较值）（使用new赋值时每次都会创建一个新的对象）
+
+String str1="abc"; String str2="abc";
+String str3=new String("abc");
+String str4=new String("abc");
+
+System.out.println(str1==str2);//使用=赋值时相同的字符串本质上是同一个对象
+System.out.println(str3==str4);
+System.out.println(str1==str3);
+
+结果是：true  false  false
+
+2.public static void change(String str){
+
+	str="abc";（String是一个引用类型，是只读对象，对String有任何改变，都将返回一个新对象）
+}
+
+public static void main(String [] args){
+	
+	String str="123";
+	change(str);
+	System.out.println(str);
+
+}
+
+结果：123
+
+3.equals比较String
+
+String str1="abc"; String str2="abc";
+String str3=new String("abc");
+String str4=new String("abc");
+
+System.out.println(str1.equals(str2))
+System.out.println(str3.equals(str4));
+System.out.println(str1.equals(str3));
+
+结果为：true true true
+
+原因：本来equals()是object类的方法，用来比较两个对象是否是同一个引用。因为String类将equals重写了，变成了值的比较。
+
+4.判断一个String是不是一个空字符串（写出简单程序）
+
+String str=null;//此时调用equals()会发生空指针异常
+
+String str="abc";
+if(str!=null&&str.equals("")){
+	System.out.println("字符串为空");
+}else{
+	System.out.println(str);
+}
+
+5.
+String bar="abc";
+
+bar.toUpperCase();//String只要是被初始化其值是不可被改变的
+
+//bar=bar.toUpperCase();//此时会输出为ABC（相当于改变了地址）
+
+System.out.println(bar);
+
+结果：abc
+
+6.字符串与基本数据类型的转换(编程题)
+
+String str="123";
+
+int i=Integer.parseInt(str);
+
+System.out.println(i);
+
+7.String str=new String("abc");创建了几个对象
+
+结果：两个或者一个
+
+原因：由于字符串是一个非常常用的类型，所以jvm中存在一个字符串常量池，保存了大量的字符串对象，并共享使用。
+   使用new String（""）;创建对象时，如果常量池中没有abc,首先会在对象常量池中创建字符串abc,然后在堆中创建字符对象，赋值给str。如果常量池中已经有abc,则创建一个对象。
+
+8.System.out.println("china"+"soft"==chinasoft);
+
+结果：true
+
+9.把基本数据类型转换成字符串对象
+
+int i=123;
+String str=String.valueof(i);//静态方法 
+此方法的参数类型可以是：boolean  int float  double等基本数据类型
+System.out.println(str);
+
+10.String StringBuffer的区别：
+赋值方式不同，StringBuffer不能用=进行赋值
+String不可变，StringBuffer是可变的。追加字符串String用+StringBuffer用append(),但是StringBuffer效率更高  
+
+11.StringBuffer与StringBuilder的区别：
+StringBuffer 是线程安全的，StringBuilder 是线程非安全的，如果在单线程环境下使用StringBuilder的效率更高。
+StringBuilder是JDK5新增加的类 两个功能类似
+
+
+
+
+12.private修饰符：
+局部变量是不能使用权限访问修饰符修饰的，类 方法 构造方法可以使用四个中的任意一个修饰。方法的局部变量不能使用任何权限修饰符
+
+13.do while ++  --
+
+public class Test{
+
+  public static void main(String[]args){
+
+	int a=1;
+	int b=10;
+	do{
+	b-=a;
+	a++;
+	
+	}while(b--<0);//此处先运算b--在进行比较
+
+	System.out.println("a="+a+"b="+b);
+
+}
+
+}
+结果：2  8
+
+14.
+int a=5;
+System.out.println("返回值为："+（（a<5）? 9.9 : 9）);
+
+结果：9
+
+15.float double
+double b=1.0;
+float f=1.0;//出现编译错误
+
+解决办法：float f=1.0f;或float f=(float)1.0;
+
+16.==比较基本数据类型
+
+System.out.println(0.3==0.3f);
+System.out.println(0.5==0.5f);
+
+结果： false  true
+
+原因：==比较基本是据类型比较的是他们二进制数
+ 
+小数与二进制的转换0.3*2=0.6  0.6*2=1.2  0.2*2=0.4  0.4*2=0.8  0.8*2=1.6  0.6*2=1.2 小数部分不可能是0，所以32位的0.3与64位的0.3的二进制是不同的
+
+17.char能存储汉字吗？
+一个汉字占两个字节，只能存一个字母。
+char类型是16位，双字节，表示一个字符可以存储一个汉字
+
+18.&和&&的区别
+String str=null;
+if(str!=null&str.length()==6){
+System.out.println("");//此时出现空指针异常
+}
+if(str!=null&&str.length()==6){
+System.out.println("");
+}
+
+都是逻辑“与”运算符 ，区别在于&&存在短路问题，也就是说当左侧表达式返回false,就不会计算右侧的表达式，直接返回false
+
+19.计算2*8，那种方法效率最高？用简单代码表示
+
+2<<3
+
+20.或运算符
+System.out.println(4|3);
+结果：7  首先将4和3转换成二进制   1|1为1  1|0为1  0|0为0
+
+21.异或运算符
+System.out.println(4^3);
+
+结果：6     首先将4和3转换成二进制  两位不同返回1，否则返回0
+
+22.
+Integer a=new Integer(10); 
+Integer b=new Integer(10);
+Integer c=b;
+int d=10;
+double e=10.0;
+
+System.out.println(d==e); true
+System.out.println(b==d); true
+System.out.println(a==b); false
+System.out.println(b==c); true
+System.out.println(a==d); true
+System.out.println(a==e); true
+System.out.println(d==10.0); true
+
+23.值传递：
+如果是基本数据类型：传递的是值
+如果是引用数据类型：传递的是地址
+
+24.staitic方法：
+
+静态方法是不能调用非静态方法的
+
+public class Test(){
+
+  public static void  main(String[]args){
+
+	amethod(args);//此处会有编译错误
+}
+ public void amethod(String[] args){
+
+  System.out.println(args);
+  System.out.println(args[1]);
+}
+
+}
+
+25.final属性：
+用final修饰的变量就成了常量，在初始化的时候必须赋值
+public class Test(){
+private final int x;//此处会有编译错误
+private static final int y=0;
+
+//解决办法(只能2选一);
+private final int x=9;
+
+public Test(){
+ x=1;
+}
+
+
+}
+
+26.java中类和类之间的继承是单继承，但是接口和接口之间是可以多继承的
+
+
+27.this关键字的作用：
+在本类中调用成员变量，只代当前的引用（调用属性和方法）。
+在构造方法中调用其它的构造方法。但是必须位于构造方法的第条语句
+
+28.静态方法中的this:
+在静态方法中不能使用this关键字的（this只代当前的引用）
+
+29.super关键字：
+子类重写父类的方法，又要保留父类的方法，就用到了super  也必须是第条语句
+
+super关键字的作用：
+必须用在子类中，调用父类的构造方法，方法 
+
+30.方法重载：
+方法名相同 参数项不同（类型和个数不同） 与访问修饰符没有关系  与返回值类型也没有关系
+
+31.继承中的构造方法：
+子类在进行初始化的时候，默认会调用父类无参的构造方法
+class Flyer{
+//解决办法
+public Flyer(){
+
+}
+  public Flyer(int i){
+
+}
+}
+
+public class bird extends Flyer{ //此时会有编译错误
+
+  public bird(){
+}
+
+}
+第二种情况
+class Flyer{
+//解决办法
+public Flyer(){
+
+}
+  public Flyer(int i){
+
+}
+}
+
+public class bird extends Flyer{ 
+
+  public bird(int i){ //此时会有编译错误
+  //解决办法	
+	super（i）；
+}
+
+}
+
+32.方法重写：必须满足的要求：必须具有相同的方法名  必须就有相同的参数列表   返回值类型必须相同  不能缩小被重写方法的访问权限
+
+33.继承与关联：
+public class A{
+  public void f(){
+}
+}
+class B extends A{
+}
+
+关联(在hibernate中表之间的关系有所体现)
+class B{
+ private A a;
+ public void bf(){
+     a.f();
+}
+}
+
+34.继承中的异常
+主要的是子类不能比父类抛出更多的异常类型。
+
+35.接口有什么样的特征：
+
+接口中不能有变量，只能有静态常量，访问权限修饰符是public
+
+public static final int STATIC_ID=0;(接口中不写public static final 也会默认有)
+
+public abstract void stract();(不写public abstract 默认也是有)
+
+36.抽象类实现接口可以实现部分接口的方法
+
+37.extends与implements
+
+extends指的是继承，可以用在类继承类（单继承），接口继承接口（可以多继承）
+
+implements指的是实现：可以用在类实现接口（一个类可以有多个实现）
+
+38.接口作为引用类型
+
+接口与抽象类都不能被实例化，但是可以作为一种引用类型存在。
+
+只要是接口的实现类的对象，都是该接口的类型。
+
+39.Collection与map
+都是接口，其存储的元素可以是任意类型的对象。
+Map是java集合框架的映射接口，以键值对的形式存储对象。
+Collection中存储的元素是一个一个的对象。
+
+40.Set与List的区别
+继承同一个接口Collection,List是有序的元素可以重复的，Set是无序的元素不可以重复的，迭代的时候，Set没有get()方法来取值
+
+41.ArrayList与LinkedList的区别：
+都是List的实现类，主要区别是其底层实现的数据结构不同，从而导致在不同的操作时性能不同。
+
+进行查询操作频繁：用ArrayList性能较高（底层实现是一个动态数组）
+
+进行频繁插入、删除时：用LinkedList性能较高（底层实现使用的是双向链表）
+
+3.JSP有哪些动作？作用分别是什么？
+
+jsp:include:在页面被请求的时候引入一个文件。
+
+jsp:useBean:寻找或者实例化JavaBean
+
+jsp:setProperty:设置JavaBean的属性
+
+jsp:getProperty:输出JavaBean的属性
+
+jsp：forward:把请求转到一个新页面
+
+jsp:plugin:根据浏览器的类型为Java插件生成object或embed标记
+
+JSP的九大内置对象作用？
+
+（1）request对象：是javax.servlet.httpservletrequst类型的对象。代表了客户端的请求信息，主要用于接受通过http协议传送到服务器的数据（包括头信息 系统信息 请求方式以及请求参数等。）request对象的作用域为一次请求。
+
+（2）response对象：
+代表的是对客户端的响应，主要是将jsp容器处理的对象传回到客户端。response对象的作用域只在jsp页面内有效。
+
+（3）session对象：
+session对象是由服务器创建的与用户请求相关的对象。服务器为每一个用户都创建一个session对象，用于保存该用户的信息，跟踪用户的操作状态。session对象内部使用Map类来保存数据，因此保存的格式为键值对。作用域：在会话没有失效或者销毁前，都可以访问该范围内的对象。
+
+（4）application对象：
+application 对象可将信息保存在服务器中，直到服务器关闭，否则application对象中保存的信息会在整个应用中都有效。与session对象相比，application对象生命周期更长，类似于系统的“全局变量”。
+
+(5）out 对象
+
+out 对象用于在Web浏览器内输出信息，并且管理应用服务器上的输出缓冲区。在使用 out 对象输出数据时，可以对数据缓冲区进行操作，及时清除缓冲区中的残余数据，为其他的输出让出缓冲空间。待数据输出完毕后，要及时关闭输出流。
+
+(6)pageContext 对象
+
+pageContext 对象的作用是取得任何范围的参数，通过它可以获取 JSP页面的out、request、reponse、session、application 等对象。pageContext对象的创建和初始化都是由容器来完成的，在JSP页面中可以直接使用 pageContext对象。
+
+(7)config 对象
+
+config 对象的主要作用是取得服务器的配置信息。通过 pageConext对象的 getServletConfig() 方法可以获取一个config对象。当一个Servlet 初始化时，容器把某些信息通过 config对象传递给这个 Servlet。 开发者可以在web.xml 文件中为应用程序环境中的Servlet程序和JSP页面提供初始化参数。
+
+(8)page 对象
+
+page 对象代表JSP本身，只有在JSP页面内才是合法的。 page隐含对象本质上包含当前 Servlet接口引用的变量，类似于Java编程中的 this 指针。
+
+(9)exception 对象
+
+exception 对象的作用是显示异常信息，只有在包含 isErrorPage="true" 的页面中才可以被使用，在一般的JSP页面中使用该对象将无法编译JSP文件。excepation对象和Java的所有对象一样，都具有系统提供的继承结构。exception 对象几乎定义了所有异常情况。在Java程序中，可以使用try/catch关键字来处理异常情况； 如果在JSP页面中出现没有捕获到的异常，就会生成 exception 对象，并把 exception 对象传送到在page指令中设定的错误页面中，然后在错误页面中处理相应的 exception 对象。
+
+4.JSP和Servlet的关系
+
+通俗的说jsp是嵌套Java代码的html，Servlet是嵌套html的Java代码
+
+jsp页面第一次发出请求，jsp页面会转化为对应JSP中指令的JAVA类，由容器创建对象，实际上就是一个Servlet。静态的HTML直接输出到和Servlet service方法关联的输出流。
+
+
+概念：hibernate是一个开源的对象关系映射框架，对JBC进行了轻量级的对象封装，有了hibernate就可以使用面向对象的编程思想来操纵数据库。
+
+hibernate的缺点：1.hibernate在批处理时有弱势
+
+2.针对单一对象简单的增删改查，适合于hibernate,而对于批量的修改删除不适合hibernate,这也是orm框架的弱点；要使用数据库特定优化机制不适合使用hibernate
+
+3.执行效率没有jdbc高，大型项目表太多配置文件内容非常庞大。
+
+4.表关系复杂会导致加载和查询很慢，尤其是级联查询的时候
+
+概念：struts是MVC模式设计的实现，通过配置文件隔离了模型和视图，以action的概念对用户的请求进行了封装，还提供了自动将请求数据填充到对象中，以及页面标签等简化代码的工具。
+
+struts的缺点：
+
+1.存在线程安全问题，仅允许一个实例处理所有的请求
+
+2.struts的适用范围受限，它是基于web的mvc解决方案，必须用到HTML jsp 和servlet来实现它。
+
+1.概念：spring是一个开源的轻量级框架，它是为了解决企业级开发的复杂性而创建的，主要优势就是分层架构，允许使用者选择，不仅限于服务端的的开发，spring的核心是控制反转（IOC）和面向切面，提供了声明式事物管理，对DAO的支持等简化开发的功能
+
+spring的优点？
+
+1.低侵入式设计 2.独立于各应用服务器
+3.spring的di机制降低了业务对象的复杂性
+4.spring开发并不依赖于spring的所有组件开发者可选
+
+2.使用框架的好处？
+
+保证程序结构风格化的统一    提高开发效率，缩短开发周期
+
+什么是设计模式？
+
+概念：是一套被反复使用，多数人知晓的经过分类编目的，代码设计经验的总结。
+
+框架与设计模式的区别？
+
+1.设计模式比框架更加抽象
+2.设计模式是比框架更小的元素，一个框架可以包括多个设计模式
+3.框架是软件，设计模式是软件知识
+
+3.hibernate JDBC mybatis struts2 jsp html在MVC中的对应关系？
+
+hibernate JDBC mybatis 对应的是M层（模型层逻辑层）
+
+struts2 对应的是C层（控制器）
+
+JSP HTML 对应的是V(是视图层)
+
+而spring框架在这里就相当于是粘合剂的作用，把几个 框架都整合在一起
+
+Set集合的底层全部采用Map集合来实现的
+
+浏览器上输入http:localhost:8080: 
+由IE翻译成ip地址，
+连接到浏览器，
+发送http请求，
+由服务器解析出要访问的主机，
+解析出要访问那个web应用，
+解析出要访问那个web资源，
+创建Servlet实例对象（第一次被访问），
+调用Servlet的init()方法完成初始化，
+调用Servlet的service方法处理请求创建请求对象和响应对象，
+service方法执行（就是往response写数据）
+服务器从response里取数据构建http响应会写给客户机
+浏览器解析响应
+
+Servlet的生命周期：
+servlet对象是由用户第一次发出请求时创建
+创建servlet对象时init()方法会被执行
+init()执行完后service方法会被执行用来处理请求
+servlet对象被销毁的时候destory()方法会被执行
+当服务器停止 或 web应用从服务器上移除的时候Servlet对象会被销毁
+
+MVC的体系结构：
+mvc分为：模型 视图 和控制。MVC模式的目的就是实现web系统的职能分工。
+
+建立索引是为了不通过存取整张表的数据而是搜素已经排除的索引，然后通过索引定位到表中快速搜索到你要的条目。
+主键是唯一索引，可以唯一标识该条目。唯一索引可以有多个，主键只有一个。
+
+SQL的主键和外键的作用：
+(1)插入非空值时，如果主键表中没有这个值，则不能插入。
+(2)更新时，不能改为主键表中没有的值。
+(3)删除主键表记录时，可以在建外键时选定外键记录一起级联删除还是拒绝删除。
+(4)更新主键记录时，同样有级联更新和拒绝执行的选择。
+SQL的主键和外键就是起约束作用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

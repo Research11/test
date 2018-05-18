@@ -28,6 +28,7 @@ exp XYFXGLUSERDEV/gbicc@ORCL file=d:\daochu.dmp owner=XYFXGLUSERDEV
 
 
 imp userid=XYFXGLUSERDEV/XYFXGLUSERDEV full=y file=d:\daochu.dmp
+imp userid=jnetcms/jnetcms full=y file=d:\jnetcmsnew.dmp
 
 查询所有的表
 

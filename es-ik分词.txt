@@ -1,0 +1,198 @@
+GET _analyze?pretty
+{
+  "analyzer": "ik_smart",
+  "text": "王者荣耀是最好玩的游戏"
+}
+GET _analyze?pretty
+{
+  "analyzer": "ik_max_word",
+  "text": "王者荣耀是最好玩的游戏"
+}
+GET _analyze?pretty
+{
+  "analyzer": "ik_smart",
+  "text": "中华人民共和国国歌"
+}
+GET /index/_analyze?pretty
+{
+  "analyzer": "ik_max_word",
+  "text": "中华人民共和国国歌"
+}
+POST /index1/fulltext1/1
+{
+  "content": "美国留给伊拉克的是个烂摊子吗"
+}
+
+POST /index1/fulltext1/2
+{
+  "content": "公安部：各地校车将享最高路权"
+}
+
+POST /index1/fulltext1/3
+{
+  "content": "中韩渔警冲突调查：韩警平均每天扣1艘中国渔船"
+}
+
+POST /index1/fulltext1/4
+{
+  "content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
+}
+POST /index1/fulltext1/_search
+{
+  "query": {
+    "match": {
+      "content": "中国"
+    }
+  }
+}
+
+PUT /index2
+{
+  "settings": {
+     "refresh_interval": "5s",
+     "number_of_shards" :   1, 
+     "number_of_replicas" : 0 
+  },
+  "mappings": {
+    "_default_":{
+      "_all": { "enabled":  false } 
+    },
+    "resource": {
+      "dynamic": false, 
+      "properties": {
+        "title": {
+          "type": "text",
+          "fields": {
+            "cn": {
+              "type": "text",
+              "analyzer": "ik_smart"
+            },
+            "en": {
+              "type": "text",
+              "analyzer": "english"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+POST /_bulk
+{ "create": { "_index": "index1", "_type": "resource", "_id": 1 } }
+{ "title": "周星驰最新电影" }
+{ "create": { "_index": "index1", "_type": "resource", "_id": 2 } }
+{ "title": "周星驰最好看的新电影" }
+{ "create": { "_index": "index1", "_type": "resource", "_id": 3 } }
+{ "title": "周星驰最新电影，最好，新电影" }
+{ "create": { "_index": "index1", "_type": "resource", "_id": 4 } }
+{ "title": "最最最最好的新新新新电影" }
+{ "create": { "_index": "index1", "_type": "resource", "_id": 5 } }
+{ "title": "I'm not happy about the foxes" }
+GET /index2/resource/_search
+{
+  "query": {
+    "match": {
+      "title.cn": "the最好游戏"
+    }
+  }
+}
+
+POST /index2/resource/_search
+{
+  "query": {
+    "multi_match": {
+      "type":     "most_fields", 
+      "query":    "the最新游戏",
+      "fields": [ "title", "title.cn", "title.en" ]
+    }
+  }
+}
+POST /index2/resource/_search
+{
+  "query": {
+    "multi_match": {
+      "type":     "most_fields", 
+      "query":    "the最新",
+      "fields": "title.cn"
+    }
+  }
+}
+
+POST /_bulk
+{ "create": { "_index": "index2", "_type": "resource", "_id": 6 } }
+{ "title": "王者荣耀最好玩的游戏" }
+{ "create": { "_index": "index2", "_type": "resource", "_id": 7 } }
+{ "title": "王者荣耀最好玩的新游戏" }
+{ "create": { "_index": "index2", "_type": "resource", "_id": 8 } }
+{ "title": "王者荣耀最新游戏，最好玩，新游戏" }
+{ "create": { "_index": "index2", "_type": "resource", "_id": 9 } }
+{ "title": "最最最最好的新新新新游戏" }
+{ "create": { "_index": "index2", "_type": "resource", "_id": 10 } }
+{ "title": "I'm not happy about the foxes" }
+
+POST /index2/resource/_search
+{
+  "query": {
+    "multi_match": {
+      "type":     "most_fields", 
+      "query":    "王者荣耀",
+      "fields": "title.cn"
+    }
+  }
+}
+POST /index2/resource/_search
+{
+  "query": {
+    "multi_match": {
+      "type":     "most_fields", 
+      "query":    "王者",
+      "fields": "title.cn"
+    }
+  }
+}
+POST /index2/resource/_search
+{
+  "query": {
+    "multi_match": {
+      "type":     "most_fields", 
+      "query":    "王者",
+      "fields": "title"
+    }
+  }
+}
+
+GET _analyze?pretty
+{
+  "analyzer": "standard",
+  "text": "我是中国人"
+}
+
+GET _analyze?pretty
+{
+  "analyzer": "ik_smart",
+  "text": "我是中国人"
+}
+
+GET _analyze?pretty
+{
+  "analyzer": "ik_max_word",
+  "text": "我是中国人"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

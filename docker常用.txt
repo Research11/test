@@ -1,3 +1,4 @@
+安装docker
 docker 配置阿里云镜像加速
 /etc/docker/daemon.json
 

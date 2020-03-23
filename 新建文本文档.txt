@@ -1,0 +1,66 @@
+linux 命令严格区分大小写
+
+1.创建文件：touch test.txt
+2.创建目录：mkdir test/a/    mkdir -p test/a/b/c
+3.查看文件：which vi（不带颜色）  whic vim  查看文件路径（带颜色）
+4.vi !$(代表上一个命令的最后一个参数)
+5.vim test.txt   进入命令行模式
+ a.按 i 编辑模式
+ b.命令行模式下：x 向后删除一个字符  等同于delete
+   X 向前删除一个字符、u 撤销一步 每按一次就撤销一次
+ c.命令行模式下：dd先当于windows下的剪切 p复制
+   数字+dd  删除多行  例：删除5行，使用5dd
+   yy复制一行  数字+yy  复制多行 例:复制3行，3yy  之后按p将复制的行粘上
+ d.批量添加注释：ctrl+v  上下移动光标（选中行） 按大写的I  再插入注释，比如"#"  在按Esc，就会全部注释了
+   删除多行注释：ctrl+v  上下移动光标（选中行） 然后按d  就会删除注释了
+6.vim 命令行模式操作
+ :w  保存
+ :q  没有进行修改退出
+ :q! 修改了，不保存，强制退出
+ :wq 保存并退出
+ :wq! 强制保存并退出
+ ZZ  保存
+ 
+7.cat 查看文件内容  cat  test.txt
+8.显示行号： set  nu   关闭显示行号： set nonu
+9.vim 编辑模式下搜索文件内容 /关键字
+10.vim 定位到某行：
+ 数字+gg  定位到某一行
+
+
+mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -Dpackaging=jar -Dfile=D:\oraclefile\ojdbc6.jar
+
+<dependency>      
+      <groupId>com.oracle</groupId>      
+      <artifactId>ojdbc6</artifactId>      
+      <version>11.2.0.1.0</version>
+</dependency>  
+
+进入linux 目录
+/usr/local/bin
+
+执行命令：
+redis-server myredis/redis.conf   启动redis服务
+
+查看进程：
+ps -ef|grep  redis   查看到端口号
+
+连接到redis
+redis-cli -p 6379
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

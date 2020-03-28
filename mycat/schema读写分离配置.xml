@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+	<schema name="TESTDB" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1">
+		
+	</schema>
+	
+	<dataNode name="dn1" dataHost="host1" database="testdb" />
+	
+	<dataHost name="host1" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="hostM1" url="150.158.104.100:3306" user="root"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="hostS1" url="150.158.104.100:3307" user="root" password="123456" />
+		</writeHost>
+		
+		<writeHost host="hostM2" url="150.158.104.100:3308" user="root"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="hostS2" url="150.158.104.100:3309" user="root" password="123456" />
+		</writeHost>
+		
+	</dataHost>
+	
+</mycat:schema>

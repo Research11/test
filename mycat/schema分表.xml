@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+	<schema name="TESTDB" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1">
+		<table name="customer" dataNode="dn2" />
+		<!--定义关联表 inner join-->
+		<table name="orders" dataNode="dn1,dn2" rule="mod_rule" >
+			<childTable name="crders_detal" primaryKey="id" joinKey="order_id"
+						parentKey="id" />
+		</table>
+		<!--定义全局表-->
+		<table name="dict_order_type" primaryKey="id" type="global" dataNode="dn1,dn2" />
+	</schema>
+	
+	<dataNode name="dn1" dataHost="host1" database="oders" />
+	<dataNode name="dn2" dataHost="host2" database="oders" />
+	
+	<dataHost name="host1" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="hostM1" url="150.158.104.100:3306" user="root" password="123456">
+			
+		</writeHost>
+		
+	</dataHost>
+	
+	<dataHost name="host2" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="hostM1" url="150.158.104.100:3307" user="root" password="123456">
+			
+		</writeHost>
+		
+	</dataHost>
+	
+</mycat:schema>

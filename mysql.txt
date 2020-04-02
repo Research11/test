@@ -1,0 +1,25 @@
+1.查看mysql数据库存储引擎
+	show engines;
+
+	InnoDB 为mysqL的默认存储引擎 
+
+2.mysql数据库创建表指定存储引擎
+	CREATE TABLE t_book
+	(
+	   Id                   VARCHAR(40),
+	   BookName           VARCHAR(100) COMMENT '图书名称'
+	   
+	) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;#指定引擎和存储字符类型
+	
+explain  type:索引类型
+	system>const>eq_ref>ref>range>index>all
+
+explain  select  t.*  from teacher  t  inner join  course c on t.tid=c.tid  
+					    inner join teachercard  a on t.tcid=a.tcid 
+					    where  c.cid=2 or a.tcid =3
+						
+						explain  select  t.tid  from teacher  t  inner join  course c on c.tid =t.tid
+					    inner join teachercard  a on t.tcid=a.tcid 
+
+
+seata-server.bat -h 127.0.0.1 -p 8091 -m db

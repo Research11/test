@@ -104,7 +104,7 @@ MergedDir目录位置，并返回到上一级目录
 查看容器id
 docker inspect --format='{{.NetworkSettings.IPAddress}}' 容器ID
 
-
+cp -r webapps.dist webapps
 
 
 

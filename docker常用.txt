@@ -104,6 +104,8 @@ MergedDir目录位置，并返回到上一级目录
 查看容器id
 docker inspect --format='{{.NetworkSettings.IPAddress}}' 容器ID
 
+--docker pull下来的tomcat webapps下文件为空 需要执行一下命令才能正常访问
+rm -rf webapps
 cp -r webapps.dist webapps
 
 

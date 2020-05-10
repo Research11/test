@@ -1,0 +1,299 @@
+redis命令：
+检查是否启动
+127.0.0.1:6379> ping
+PONG
+切换库
+127.0.0.1:6379> select 1
+OK
+127.0.0.1:6379[1]>
+
+string类型保存数据：
+127.0.0.1:6379[1]> set key1 value
+OK
+string类型查询数据：
+127.0.0.1:6379[1]> get key1
+"value"
+
+string类型追加字符串：
+127.0.0.1:6379[1]> append key1 zhuijia
+(integer) 12
+127.0.0.1:6379[1]> get key1
+"valuezhuijia"
+
+string类型返回字符串的长度
+127.0.0.1:6379[1]> strlen ss  （key不存在返回0）
+(integer) 0
+127.0.0.1:6379[1]> strlen key1
+(integer) 12
+
+string类型字符串截取
+127.0.0.1:6379[1]> getrange key1 0 3
+"valu"
+
+127.0.0.1:6379[1]> getrange key1 2 -1  （valuezhuijia）
+"luezhuijia"
+
+string类型字符串替换：
+127.0.0.1:6379[1]> setrange key1 4 tihuan  （从0开始包含第四个）
+(integer) 12
+
+127.0.0.1:6379[1]> get key1  （原来是valuezhuijia）
+"valutihuania"
+
+string类型字符同时设置/获取多个key-value   
+127.0.0.1:6379[1]> mset name zhangsan age 12
+OK
+127.0.0.1:6379[1]> mget name age
+1) "zhangsan"
+2) "12"
+
+根据key删除多个
+127.0.0.1:6379[1]> del name age
+(integer) 2
+
+
+hash类型：
+127.0.0.1:6379[1]> hset hkey hfiled  testhash
+(integer) 1
+127.0.0.1:6379[1]> hget HKEY filed1
+"testhash"
+同时设置多个域和值
+127.0.0.1:6379[1]> hmset hkey filed1 zhangsan filed2 lisi
+OK
+查看多个域的值
+127.0.0.1:6379[1]> hmget hkey filed1 filed2
+1) "zhangsan"
+2) "lisi"
+
+获取哈希表key中所有的域和值
+127.0.0.1:6379[1]> hgetall hkey
+1) "filed1"
+2) "zhangsan"
+3) "filed2"
+4) "lisi"
+
+查看哈希表 key 中的所有域
+127.0.0.1:6379[1]> hkeys hkey
+1) "filed1"
+2) "filed2"
+
+返回哈希表 中所有域的值
+127.0.0.1:6379[1]> hvals hkey
+1) "zhangsan"
+2) "lisi"
+
+查看哈希表 key 中，给定域 field 是否存在
+127.0.0.1:6379[1]> hexists hkey filed3  （filed3 不存在）
+(integer) 0
+127.0.0.1:6379[1]> hexists hkey filed1
+(integer) 1
+127.0.0.1:6379[1]>
+
+删除哈希表 key 中的一个或多个
+127.0.0.1:6379[1]> hdel hkey filed1 filed2
+(integer) 2
+
+列表 list——基本命令
+
+将一个或多个值 value 插入到列表
+127.0.0.1:6379[1]> lpush lkey a b c
+(integer) 3
+
+将一个或多个值 value 插入到列表 key 的表尾
+127.0.0.1:6379[1]> rpush lkey 1 2 3
+(integer) 6
+
+获取列表 key 中指定区间内的元素，
+0 表示列表的第一个元素，以 1 表示列表的第二个元素；
+-1 表示列表的最后一个元素， -2 表示列表的倒 数第二个元素，
+以此类推
+127.0.0.1:6379[1]> lrange lkey 0 -1
+1) "c"
+2) "b"
+3) "a"
+4) "1"
+5) "2"
+6) "3"
+
+获取列表 key 中下标为指定 index 的元素，列表元素不删除，只是查询
+127.0.0.1:6379[1]> lindex lkey 1
+"b"
+
+获取列表 key 的长度
+127.0.0.1:6379[1]> llen lkey
+(integer) 6
+
+根据参数count的值，移除列表中与参数value相等的元素
+count>0 ，从列表的左侧向右开始移 除；
+count<0从列表的尾部开始移除；
+count=0 移除表中所有与value相等的值。
+127.0.0.1:6379[1]> lrem lkey 0 a  （类似于全部替换）
+(integer) 2
+
+将列表 key 下标为 index 的元素的值设置为 value
+127.0.0.1:6379[1]> lset lkey 0 a
+OK
+
+移除列表的最后一个元素，返回值为移除的元素。
+127.0.0.1:6379[1]> rpop lkey
+"c"
+
+移除列表的第一个元素
+127.0.0.1:6379[1]> lpop lkey
+"a"
+
+将值value插入到列表key当中位于 某值 之前或之后的位置
+127.0.0.1:6379[1]> linsert lkey before 1 k
+(integer) 6
+127.0.0.1:6379[1]> lrange lkey 0 -1
+1) "b"
+2) "k"
+3) "1"
+4) "2"
+5) "3"
+6) "b"
+
+
+集合类型 set ——常用命令
+
+将一个或多个 member 元素加入到集合 key 当中
+127.0.0.1:6379[1]> sadd skey a b c
+(integer) 3
+
+获取集合 key 中的所有成员元素
+127.0.0.1:6379[1]> smembers skey
+1) "c"
+2) "b"
+3) "a"
+
+获取集合里面的元素个数
+127.0.0.1:6379[1]> scard skey
+(integer) 3
+
+删除集合 key 中的一个或多个元素
+127.0.0.1:6379[1]> srem skey a b
+(integer) 2
+
+随机从集合中删除一个元素
+
+127.0.0.1:6379[1]> spop skey 1
+1) "c"
+
+随机返回集合中一个元素，元素不删除，依然在集合中
+127.0.0.1:6379[1]> srandmember skey 2
+1) "e"
+2) "d"
+
+集合类型 zset ——常用命令
+添加元素
+127.0.0.1:6379[1]> zadd myzet 1 noe
+(integer) 1
+127.0.0.1:6379[1]> zadd myzet 2 tow
+(integer) 1
+查看集合中的元素
+127.0.0.1:6379[1]> zrange myzet 0 -1
+1) "noe"
+2) "tow"
+
+zrange:查看集合中的元素，后面加上withscores即可显示当前元素所对应的顺序
+127.0.0.1:6379[1]> zrange  myzet 0 -1 withscores
+1) "noe"
+2) "1"
+3) "tow"
+4) "2"
+
+zrem:删除集合中指定的元素
+127.0.0.1:6379[1]> zrem myzet noe tow
+(integer) 2
+
+
+redis主从复制：
+
+创建三个文件：redis6379.conf、redis6380.conf、redis6381.conf （修改端口号、日志、dump、pidfile）
+
+启动redis服务：redis-server redis6379.conf
+
+客户端连接：redis-cli -p 6379
+
+查看节点信息：info replication （在客户端模式下）
+
+设置主从复制：SLAVEOF 127.0.0.1 6379
+
+取消主从复制关系：SLAVEOF no one（80上执行） slaveof 127.0.0.1 6380 （81上执行）
+
+哨兵模式：
+
+创建sentinel.cof文件 （添加配置：sentinel monitor host6379 127.0.0.1 6379 1）剩余两台集器投票谁的票数大于1谁就是主机
+
+启动哨兵：redis-sentinel sentinel.cof
+
+哨兵模式下如果6379宕机：80、81 通过投票选举的方式重新组成一套主从复制，此时79重新启动那么79将变成slave（从机）
+
+redis集群(最少6个节点，不然报错)：
+
+从redis解压目录 /opt/redis-5.0.7（redis.conf）复制六个文件：
+redis6379.conf、redis6380.conf、redis6381.conf、redis6382.conf、redis6383.conf、redis6385.conf
+
+修改如下配置：
+daemonize yes
+bind 192.168.1.4
+pidfile /var/run/redis_6379.pid
+port 6379
+cluster-enabled yes 
+cluster-config-file nodes_6379.conf 
+cluster-node-timeout 5000 
+protected-mode no 
+
+创建startCluster.sh 文件并授权添加如下内容：
+cd /jqredis
+redis-server redis6379.conf（.conf文件在jqredis目录下）
+cd /jqredis
+redis-server redis6380.conf
+cd /jqredis
+redis-server redis6381.conf
+cd /jqredis
+redis-server redis6382.conf
+cd /jqredis
+redis-server redis6383.conf
+cd /jqredis
+redis-server redis6385.conf
+
+将redis-trib.rb  cp到某个目录下：
+例如：cp /opt/redis-5.0.7/src  /jqredis/rediscluster
+
+执行startCluster.sh文件 （./startCluster.sh）启动reids服务
+
+执行createCluster.sh文件 （./createCluster.sh）或者执行以下命令
+
+ruby redis-trib.rb create --replicas 1 192.168.1.4:6379 192.168.1.4:6380 192.168.1.4:6381 192.168.1.4:6382 192.168.1.4:6383 192.168.1.4:6385
+
+然后复制：Example:的内容接着执行
+
+redis-cli --cluster create 192.168.1.4:6379 192.168.1.4:6380 192.168.1.4:6381 192.168.1.4:6382 192.168.1.4:6383 192.168.1.4:6385 --cluster-replicas 1
+
+测试：
+redis-cli -h 192.168.1.4 -p 6379 -c  （-c代表以集群方式登录）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

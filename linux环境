@@ -14,3 +14,31 @@ export PATH=$PATH:${JAVA_PATH}
 5.通过命令source /etc/profile让profile文件立即生效
 6.验证是否成功
 Java -version
+
+二linux安装svn
+1.安装svn服务
+yum install subversion
+2.创建仓库文件夹：
+mkdir repository
+3.用svn管理员身份创建一个仓库
+svnadmin create repository
+4.进入repository/conf目录分别修改authz、passwd、svnserve.conf三个文件
+passwd修改如下：
+   [users]
+   liuhb=liuhb123
+   renzj=renzj123
+
+authz修改如下：
+   [groups]
+   group1 = admin
+   group2 = liuhb,renzj
+   [/]
+   @group1 = rw
+   @group2 = rw
+   * =
+svnserve.conf修改如下：
+anon-access = read #匿名用户可读
+auth-access = write #授权用户可写
+password-db = passwd #使用哪个文件作为账号文件
+authz-db = authz #使用哪个文件作为权限文件
+realm = /usr/anzhuangbao/repository # 认证空间名，版本库所在目录

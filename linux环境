@@ -1,0 +1,16 @@
+1.在/usr/目录创建文件夹
+mkdir java 
+2.给Java文件授权
+chmod 777 java
+3.将下载好的Linuxjdk上传到Java文件夹下并解压
+tar -xzvf jdk-8u261-linux-x64.tar.gz
+4.配置环境变量
+vim /etc/profile配置文件最后添加如下配置：
+export JAVA_HOME=/usr/java/jdk1.8.0_261
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
+export JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin
+export PATH=$PATH:${JAVA_PATH}
+5.通过命令source /etc/profile让profile文件立即生效
+6.验证是否成功
+Java -version

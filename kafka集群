@@ -1,0 +1,116 @@
+创建zk和kafka 文件夹
+cd /
+mkdir myfile
+cd myfile
+mkdir zk kafka
+创建zk所需文件夹
+cd /myfile/zk
+mkdir data logs
+cd data
+mkdir master slave_1 slave_2
+cd …/logs
+mkdir master slave_1 slave_2
+切换到zk目录解压zookeeper
+tar -zxvf zookeeper-3.4.10.tar.gz
+cp -r zookeeper-3.4.10 zookeeper_master
+cp -r zookeeper-3.4.10 zookeeper_slave_1
+mv zookeeper-3.4.10 zookeeper_slave_2
+分别编辑myid文件值分别为1、2、3
+vim /myfile/zk/data/master/myid
+vim /myfile/zk/data/slave_1/myid
+vim /myflie/zk/data/slave_2/myid
+分别编辑配置文件
+vim /myfile/zk/zookeeper_master/conf/zoo.cfg
+
+clientPort=2181
+dataDir=/myfile/zk/data/master
+dataLogDir=/myfile/zk/logs/master
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+server.3=127.0.0.1:2890:3890
+vim /myfile/zk/zookeeper_slave_1/conf/zoo.cfg
+
+clientPort=2182
+dataDir=/myfile/zk/data/slave_1
+dataLogDir=/myfile/zk/logs/slave_1
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+server.3=127.0.0.1:2890:3890
+vim /myfile/zk/zookeeper_slave_2/conf/zoo.cfg
+
+clientPort=2183
+dataDir=/myfile/zk/data/slave_2
+dataLogDir=/myfile/zk/logs/slave_2
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+server.3=127.0.0.1:2890:3890
+启动
+cd /myfile/zk/zookeeper_master/bin/
+./zkServer.sh start
+cd /myfile/zk/zookeeper_slave_1/bin/
+./zkServer.sh start
+cd /myfile/zk/zookeeper_slave_2/bin/
+./zkServer.sh start
+
+创建kafka所需文件
+cd /myfile/kafka
+mkdir logs
+cd logs
+mkdir kafka_1 kafka_2 kafka_3
+解压kafka压缩包
+tar -zxvf kafka_2.11-2.0.1.tgz
+cp -r kafka_2.11-2.0.1 kafka_1
+cp -r kafka_2.11-2.0.1 kafka_2
+mv kafka_2.11-2.0.1 kafka_3
+分别编辑配置文件
+vim /myfile/kafka/kafka_1/config/server.properties
+
+broker.id=0
+port=9092
+listeners=PLAINTEXT://192.168.124.6:9092
+log.dirs=/myfile/kafka/logs/kafka_1/
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+
+vim /myfile/kafka/kafka_1/config/consumer.properties
+
+bootstrap.servers=localhost:9092 
+group.id=logGroup
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+
+vim /myfile/kafka/kafka_2/config/server.properties
+
+broker.id=1
+port=9093
+listeners=PLAINTEXT://192.168.124.6:9093
+log.dirs=/myfile/kafka/logs/kafka_2/
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+接着编辑
+vim /myfile/kafka/kafka_2/config/consumer.properties
+
+bootstrap.servers=localhost:9093
+group.id=logGroup
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+接着编辑
+vim /myfile/kafka/kafka_3/config/server.properties
+
+broker.id=2
+port=9094
+listeners=PLAINTEXT://192.168.124.6:9094
+log.dirs=/myfile/kafka/logs/kafka_3/
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+接着编辑
+vim /myfile/kafka/kafka_3/config/consumer.properties
+
+bootstrap.servers=localhost:9094
+group.id=logGroup
+zookeeper.connect=localhost:2181,localhost:2182,localhost:2183
+
+启动kafka
+sh /myfile/kafka/kafka_1/bin/kafka-server-start.sh  /myfile/kafka/kafka_1/config/server.properties &
+sh /myfile/kafka/kafka_2/bin/kafka-server-start.sh  /myfile/kafka/kafka_2/config/server.properties &
+sh /myfile/kafka/kafka_3/bin/kafka-server-start.sh  /myfile/kafka/kafka_3/config/server.properties &
+
+
+
+
+

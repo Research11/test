@@ -110,6 +110,16 @@ sh /myfile/kafka/kafka_1/bin/kafka-server-start.sh  /myfile/kafka/kafka_1/config
 sh /myfile/kafka/kafka_2/bin/kafka-server-start.sh  /myfile/kafka/kafka_2/config/server.properties &
 sh /myfile/kafka/kafka_3/bin/kafka-server-start.sh  /myfile/kafka/kafka_3/config/server.properties &
 
+图形界面
+解压 unzip kafka-manager-1.0-SNAPSHOT.zip -d /usr/local
+
+改名 mv kafka-manager-1.0-SNAPSHOT kafka-manager-1.0
+
+编辑文件：vim /usr/local/kafka-manager-1.0/conf/application.conf
+
+修改内容：
+
+kafka-manager.zkhosts="192.168.124.6:2181,192.168.124.6:2182,192.168.124.6:2183"
 kafkamanager 启动命令
 nohup /usr/local/kafka-manager-1.0/bin/kafka-manager -Dconfig.file=/usr/local/kafka-manager-1.0/conf/application.conf >/dev/null 2>&1 &
 
